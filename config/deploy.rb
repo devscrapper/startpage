@@ -162,7 +162,9 @@ namespace :deploy do
 
   task :gem_list, :roles => :app do
     #installation des gem dans le gesmset
+    p gemlist(Pathname.new(File.join(File.dirname(__FILE__), '..', 'Gemfile')).realpath)
     gemlist(Pathname.new(File.join(File.dirname(__FILE__), '..', 'Gemfile')).realpath).each { |parse|
+      p parse
       run ("gem query -I #{parse[:name].strip} -v #{parse[:version].strip} ; if [  $? -eq 0 ] ; then gem install #{parse[:name].strip} -v #{parse[:version].strip} -N ; else echo \"gem #{parse[:name].strip} #{parse[:version].strip} already installed\" ; fi")
     }
   end
