@@ -55,10 +55,10 @@ require 'pathname'
 # proprietes de l'application
 #----------------------------------------------------------------------------------------------------------------------
 
-set :application, "visitorbot" # nom application (github)
+set :application, "startpage" # nom application (github)
 set :ftp_server_port, 9102 # port d"ecoute du serveur ftp"
 set :shared_children, ["log"] # répertoire partagé entre chaque release
-set :server_list, ["start_page_visit_#{application}"]
+set :server_list, [application]
 
 #----------------------------------------------------------------------------------------------------------------------
 # param rvm
