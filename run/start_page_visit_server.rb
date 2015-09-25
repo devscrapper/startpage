@@ -4,7 +4,7 @@ require 'openssl'
 require 'yaml'
 require_relative '../lib/logging'
 require_relative '../lib/parameter'
-
+require_relative '../lib/utils'
 
 class StartPageVisitServer
   attr :server
@@ -28,6 +28,7 @@ class StartPageVisitServer
     begin
     server.mount_proc '/start_link' do |req, res|
       param = req.query
+      p req
       @@logger.a_log.info "method #{param["method"]}"
       @@logger.a_log.info "url #{param["url"]}"
       @@logger.a_log.info "visitor id #{param["visitor_id"]}"
