@@ -42,7 +42,7 @@
 # 4 cap machine:reboot
 #----------------------------------------------------------------------------------------------------------------------
 # ordre de lancement des commandes deploy : next deploy
-# 1 cap deploy:gem_list       #installe les nouveaux gem si besoin
+# 1 cap deploy:gem       #installe les nouveaux gem si besoin
 # 2 cap deploy:update    # deploie les sources
 # 3 cap deploy:restart     # demarre les serveurs
 #----------------------------------------------------------------------------------------------------------------------
@@ -56,6 +56,7 @@ require 'pathname'
 #----------------------------------------------------------------------------------------------------------------------
 
 set :application, "startpage" # nom application (github)
+set :ftp_server_port, 9102 # port d"ecoute du serveur ftp"
 set :shared_children, ["log"] # répertoire partagé entre chaque release
 set :server_list, [application]
 
@@ -66,7 +67,7 @@ set :server_list, [application]
 require "rvm/capistrano" #  permet aussi d'installer rvm et ruby
 require "rvm/capistrano/alias_and_wrapp"
 require "rvm/capistrano/gem_install_uninstall"
-set :rvm_ruby_string, '2.2.3' # defini la version de ruby a installer
+set :rvm_ruby_string, '1.9.3' # defini la version de ruby a installer
 set :rvm_type, :system #RVM installed in /usr/local, multiuser installation
 set :rvm_autolibs_flag, :enable #permet d'installer automatiquement les composants (build_essential, libtool, libyaml) pour ruby
 set :bundle_dir, '' # on n'utilise pas bundle pour instaler les gem
@@ -103,16 +104,12 @@ before 'rvm:install_rvm', 'avant:install_rvm'
 before 'rvm:install_ruby', 'rvm:create_gemset' #, 'avant:install_ruby'
 after 'rvm:install_ruby', 'apres:install_ruby'
 before 'deploy:setup', 'rvm:create_alias', 'rvm:create_wrappers', 'deploy:gem_list'
-after "deploy:update", "apres:update", "deploy:start" , "deploy:status"
-#before "deploy:update","deploy:stop" , "log:delete"
+after "deploy:update", "apres:update"
 
 #----------------------------------------------------------------------------------------------------------------------
 # task list : log
 #----------------------------------------------------------------------------------------------------------------------
 namespace :log do
-  task :test1 do
-    p current_path
-  end
   task :down, :roles => :app do
    capture("ls #{File.join(current_path, 'log', '*.*')}").split(/\r\n/).each{|log_file|
      get log_file, File.join(File.dirname(__FILE__), '..', 'log', File.basename(log_file))
@@ -150,13 +147,9 @@ namespace :deploy do
     server_list.each { |server| run "#{sudo} initctl stop #{server}" }
   end
 
-  task :status, :roles => :app, :except => {:no_release => true} do
-    server_list.each { |server| run "#{sudo} initctl status #{server}" }
-  end
-
   task :restart, :roles => :app, :except => {:no_release => true} do
-    stop
-   	start
+    server_list.each { |server| run "#{sudo} initctl stop #{server}" }
+    server_list.each { |server| run "#{sudo} initctl start #{server}" }
   end
 
   task :first, :roles => :app do
@@ -169,7 +162,9 @@ namespace :deploy do
 
   task :gem_list, :roles => :app do
     #installation des gem dans le gesmset
+    p gemlist(Pathname.new(File.join(File.dirname(__FILE__), '..', 'Gemfile')).realpath)
     gemlist(Pathname.new(File.join(File.dirname(__FILE__), '..', 'Gemfile')).realpath).each { |parse|
+      p parse
       run ("gem query -I #{parse[:name].strip} -v #{parse[:version].strip} ; if [  $? -eq 0 ] ; then gem install #{parse[:name].strip} -v #{parse[:version].strip} -N ; else echo \"gem #{parse[:name].strip} #{parse[:version].strip} already installed\" ; fi")
     }
   end
@@ -236,7 +231,7 @@ def gemlist(file)
     case line
       when /gem (.*)/
         if catch_gem
-          gemlist << /gem '(?<name>.*)', '(~> )*(?<version>\d+\.\d+(\.\d+)*)'/.match(line)
+          gemlist << /gem '(?<name>.*)', '~>(?<version> \d+\.\d+\.\d+)'/.match(line)
         end
       when /.*:development.*/
         catch_gem = false
