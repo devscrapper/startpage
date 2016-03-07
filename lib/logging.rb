@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w
 # encoding: UTF-8
 require "logging"
-require_relative 'utils'
+
 module Logging
   # la stratégie de logging est conditionnée par trois critères :
   # staging : development, test, production
@@ -52,8 +52,8 @@ module Logging
         @logger = Logging::Logger[obj]
         #Logging::show_configuration
       else
-        @staging = opts.getopt(:staging, STAGING_PROD)
-        @debugging = opts.getopt(:debugging, false)
+        @staging = opts.fetch(:staging, STAGING_PROD)
+        @debugging = opts.fetch(:debugging, false)
         @class_name = obj.class.name.gsub("::", "_")
         @main = @class_name == Object.name
         param_1(opts) if @debugging and [STAGING_TEST, STAGING_PROD].include?(@staging) and @main
@@ -151,7 +151,7 @@ module Logging
     end
 
     def param_1(opts)
-      @id_file = opts.getopt(:id_file, "root")
+      @id_file = opts.fetch(:id_file, "root")
       @logger = Logging.logger["root"]
       @logger.level = :debug
       @logger.add_appenders(email)
@@ -170,7 +170,7 @@ module Logging
     end
 
     def param_3(opts)
-      @id_file = opts.getopt(:id_file, "root")
+      @id_file = opts.fetch(:id_file, "root")
       @logger = Logging.logger["root"]
       @logger.level = :debug
       @logger.add_appenders(email)
@@ -180,7 +180,7 @@ module Logging
     end
 
     def param_4(opts)
-      @id_file = opts.getopt(:id_file, "root")
+      @id_file = opts.fetch(:id_file, "root")
       @logger = Logging.logger["root"]
       @logger.level = :info
       @logger.add_appenders(email)
@@ -195,7 +195,7 @@ module Logging
     end
 
     def param_6(opts)
-      @id_file = opts.getopt(:id_file, "root")
+      @id_file = opts.fetch(:id_file, "root")
       @logger = Logging.logger["root"]
       @logger.level = :info
       @logger.add_appenders(email)
