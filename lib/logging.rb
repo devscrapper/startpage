@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w
 # encoding: UTF-8
 require "logging"
-
+require_relative 'utils'
 module Logging
   # la stratégie de logging est conditionnée par trois critères :
   # staging : development, test, production
@@ -102,7 +102,6 @@ module Logging
     end
 
     def syslog()
-      #TODO mettre en oeuvre sur le serveur de test logAnalyzer
       Logging::Appenders.syslog(@class_name)
     end
 
@@ -155,7 +154,6 @@ module Logging
       @id_file = opts.getopt(:id_file, "root")
       @logger = Logging.logger["root"]
       @logger.level = :debug
-      @logger.trace = true
       @logger.add_appenders(email)
       @logger.add_appenders(syslog)  if HAVE_SYSLOG
       @logger.add_appenders(debfile)
@@ -167,7 +165,6 @@ module Logging
       @logger = Logging.logger[obj]
       @logger.additive = true
       @logger.level = :debug
-      @logger.trace = true
       @logger.add_appenders(debfile)
       @logger.add_appenders(ymlfile)
     end
@@ -176,7 +173,6 @@ module Logging
       @id_file = opts.getopt(:id_file, "root")
       @logger = Logging.logger["root"]
       @logger.level = :debug
-      @logger.trace = true
       @logger.add_appenders(email)
       @logger.add_appenders(stdout)
       @logger.add_appenders(debfile)
