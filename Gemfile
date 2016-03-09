@@ -11,10 +11,10 @@ gem 'webrick', '~> 1.3.1'
 
 #group :development
 group :development do
-gem 'capistrano', '~> 2.15.5'
-gem 'rvm-capistrano', '~> 1.5.3'
-#gem 'net-ssh', '~> 2.8.0'
-gem 'bundler', '~> 1.10.6'
+  gem 'capistrano-rvm'
+  gem 'capistrano', '~> 3.1'
+  gem 'capistrano-bundler', '~> 1.1.2'
+  gem 'tzinfo-data', '~>1.2014.5'
 end
 
 group :production      do
