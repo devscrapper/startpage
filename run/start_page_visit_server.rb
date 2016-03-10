@@ -4,15 +4,15 @@ require 'openssl'
 require 'yaml'
 require_relative '../lib/logging'
 require_relative '../lib/parameter'
-require_relative '../lib/utils'
+
 
 class StartPageVisitServer
   attr :server, :logger
 
   def initialize(port, logger)
     @logger = logger
-    cert = OpenSSL::X509::Certificate.new File.read File.join(File.dirname(__FILE__), '..', 'certificat', 'start_page_visit_server.cert')
-    pkey = OpenSSL::PKey::RSA.new File.read File.join(File.dirname(__FILE__), '..', 'certificat', 'start_page_visit_server.key')
+    #cert = OpenSSL::X509::Certificate.new File.read File.join(File.dirname(__FILE__), '..', 'certificat', 'start_page_visit_server.cert')
+    #pkey = OpenSSL::PKey::RSA.new File.read File.join(File.dirname(__FILE__), '..', 'certificat', 'start_page_visit_server.key')
 
     #@server = WEBrick::HTTPServer.new(:Port => 443,
     #                                      :SSLEnable => true,
